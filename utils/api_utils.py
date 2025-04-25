@@ -14,7 +14,7 @@ def get_serper_api_key():
 
 def get_groq_api_key():
     """Get Groq API key from environment variables."""
-    return os.getenv("GROQ_API_KEY", "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")
+    return os.getenv("GROQ_API_KEY", "")
 
 def get_google_api_key():
     """Get Google API key from environment variables."""
@@ -42,9 +42,14 @@ def search_web(query, num_results=10):
         'Content-Type': 'application/json'
     }
 
+    # Adicionar restrição de data para resultados recentes (2024-2025)
+    # Usar uma restrição mais específica para garantir resultados de 2024-2025
+    date_restricted_query = f"{query} after:2024-01-01 before:2025-12-31"
+
     payload = {
-        'q': query,
-        'num': num_results
+        'q': date_restricted_query,
+        'num': num_results,
+        'timeRange': 'last12m'  # Adicionar restrição de tempo para os últimos 12 meses
     }
 
     try:
@@ -212,7 +217,7 @@ def call_google_api(prompt, system_message="You are a helpful assistant.", max_t
         print(f"Error in call_google_api: {e}")
         return f"Error calling Google API: {str(e)}"
 
-def search_arxiv(query, max_results=10, sort_by="relevance", sort_order="descending"):
+def search_arxiv(query, max_results=10, sort_by="relevance", sort_order="descending", context=""):
     """
     Search arXiv for academic papers using the arXiv API.
 
@@ -221,25 +226,132 @@ def search_arxiv(query, max_results=10, sort_by="relevance", sort_order="descend
         max_results (int): Maximum number of results to return
         sort_by (str): Sort by 'relevance', 'lastUpdatedDate', or 'submittedDate'
         sort_order (str): Sort order 'ascending' or 'descending'
+        context (str): Additional context to improve search relevance
 
     Returns:
         list: List of paper dictionaries with title, authors, summary, etc.
     """
+    # Traduzir a consulta para inglês se estiver em outro idioma
+    # Dicionário de traduções comuns para termos de IA e saúde
+    translations = {
+        "inteligência artificial": "artificial intelligence",
+        "aprendizado de máquina": "machine learning",
+        "aprendizagem profunda": "deep learning",
+        "redes neurais": "neural networks",
+        "saúde": "health",
+        "medicina": "medicine",
+        "diagnóstico": "diagnosis",
+        "tratamento": "treatment",
+        "paciente": "patient",
+        "hospital": "hospital",
+        "clínica": "clinic",
+        "médico": "medical",
+        "doença": "disease",
+        "câncer": "cancer",
+        "diabetes": "diabetes",
+        "radiologia": "radiology",
+        "imagem médica": "medical imaging",
+        "prontuário eletrônico": "electronic health record",
+        "telemedicina": "telemedicine",
+        "na saúde": "in healthcare"
+    }
+
+    # Verificar se a consulta está em português e traduzi-la
+    query_lower = query.lower()
+    english_query = query
+
+    # Verificar se a consulta contém palavras em português
+    for pt_term, en_term in translations.items():
+        if pt_term in query_lower:
+            english_query = query_lower.replace(pt_term, en_term)
+            print(f"Traduzindo consulta para inglês: '{query}' -> '{english_query}'")
+            break
+
+    # Se a consulta original era "Inteligência Artificial na Saúde", usar uma tradução específica
+    if query_lower == "inteligência artificial na saúde":
+        english_query = "artificial intelligence in healthcare"
+        print(f"Traduzindo consulta para inglês: '{query}' -> '{english_query}'")
+
+    # Usar a consulta em inglês para o arXiv
+    query = english_query
     base_url = "http://export.arxiv.org/api/query"
 
     # Ensure max_results is within limits (arXiv API has a limit of 2000 per request)
     if max_results > 100:
         max_results = 100  # We'll limit to 100 to avoid overloading the API
 
+    # Get current year for date filtering
+    current_year = datetime.now().year
+
+    # Extract key terms from query and context for better search
+    key_terms = []
+
+    # Add the original query
+    key_terms.append(query)
+
+    # If context is provided, extract key terms
+    if context:
+        # Traduzir o contexto para inglês também
+        english_context = context
+        context_lower = context.lower()
+        for pt_term, en_term in translations.items():
+            if pt_term in context_lower:
+                english_context = context_lower.replace(pt_term, en_term)
+                print(f"Traduzindo contexto para inglês")
+
+        # Simple extraction of potential key terms from English context
+        context_words = english_context.lower().split()
+        # Look for important terms (nouns, technical terms, etc.)
+        important_indicators = ["ai", "machine", "learning", "neural", "data", "algorithm",
+                               "model", "system", "technology", "analysis", "research",
+                               "health", "medical", "clinical", "patient", "treatment",
+                               "business", "market", "industry", "innovation", "strategy"]
+
+        for word in context_words:
+            # Remove punctuation
+            clean_word = ''.join(c for c in word if c.isalnum())
+            if len(clean_word) > 3 and (clean_word in important_indicators or clean_word.istitle()):
+                key_terms.append(clean_word)
+
+    # Create a more targeted query
+    enhanced_query = f"({query})"
+
+    # Add date constraint for recent papers (last 2 years)
+    date_constraint = f" AND submittedDate:[{current_year-1} TO {current_year}]"
+    enhanced_query += date_constraint
+
+    # Adicionar restrição para artigos em inglês
+    enhanced_query += " AND language:en"
+
     # Format query for arXiv API
-    # For simple queries, we'll use the standard format
-    if any(prefix in query for prefix in ['ti:', 'au:', 'abs:', 'cat:', 'all:']):
+    if any(prefix in enhanced_query for prefix in ['ti:', 'au:', 'abs:', 'cat:', 'all:']):
         # Query already has field prefixes, use it as is but replace spaces with +
-        formatted_query = query.replace(' ', '+')
+        formatted_query = enhanced_query.replace(' ', '+')
     else:
-        # For a simple query, we'll search in all fields
-        # We'll use double quotes to search for the exact phrase
-        formatted_query = f'all:{query}'
+        # Para consultas em inglês, usar uma abordagem mais ampla
+        # Extrair palavras-chave da consulta
+        query_words = query.split()
+
+        # Se a consulta for "artificial intelligence in healthcare" ou similar
+        if "artificial intelligence" in query.lower() and ("healthcare" in query.lower() or "health" in query.lower()):
+            # Usar uma consulta mais específica para IA na saúde, priorizando o título
+            formatted_query = f'(ti:"artificial intelligence" AND (ti:health OR ti:healthcare OR ti:medical OR ti:medicine OR ti:clinical)) OR (abs:"artificial intelligence" AND (abs:health OR abs:healthcare OR abs:medical OR abs:medicine OR abs:clinical) AND (abs:innovation OR abs:novel OR abs:new OR abs:recent OR abs:advance)){date_constraint}'
+        elif len(query_words) > 3:
+            # Para consultas longas, dividir em termos e buscar em título ou resumo
+            main_terms = [word for word in query_words if len(word) > 3 and word.lower() not in ["and", "or", "the", "in", "on", "at", "for", "with", "by"]]
+            term_conditions = []
+
+            for term in main_terms:
+                term_conditions.append(f'ti:"{term}" OR abs:"{term}"')
+
+            if term_conditions:
+                formatted_query = f'({" AND ".join(term_conditions)}){date_constraint}'
+            else:
+                # Fallback para a consulta original
+                formatted_query = f'(ti:"{query}" OR abs:"{query}"){date_constraint}'
+        else:
+            # Para consultas simples, buscar no título ou resumo
+            formatted_query = f'(ti:"{query}" OR abs:"{query}"){date_constraint}'
 
     # Print the formatted query for debugging
     print(f"Formatted arXiv query: {formatted_query}")

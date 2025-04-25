@@ -29,7 +29,25 @@ Thumbs.db
 *.tmp
 temp/
 tmp/
+temp_pdfs/
 
 # Arquivos de dados grandes que não devem ser versionados
 data/pdfs/*
 !data/pdfs/.gitkeep
+
+# Arquivos da versão antiga (não-LangGraph)
+innovation_system.py
+RAG_BM25.py  # Versão antiga, a nova está em utils/rag_bm25.py
+agents/
+!agents/__init__.py
+
+# Arquivos de teste e desenvolvimento
+test_*.py
+example_*.py
+run_*.bat
+
+# Manter apenas a versão LangGraph
+# Não ignorar:
+# - langgraph_agents/
+# - innovation_system_langgraph.py
+# - requirements_langgraph.txt
