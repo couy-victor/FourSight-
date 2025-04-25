@@ -1,0 +1,34 @@
+[
+    {
+        "name": "SCAMPER",
+        "description": "Técnica que sugere diferentes formas de modificar um produto ou serviço existente: Substituir, Combinar, Adaptar, Modificar, Propor outros usos, Eliminar, Rearranjar."
+    },
+    {
+        "name": "Design Thinking",
+        "description": "Abordagem centrada no usuário que envolve empatia, definição do problema, ideação, prototipagem e testes."
+    },
+    {
+        "name": "Blue Ocean Strategy",
+        "description": "Estratégia que busca criar novos mercados (oceanos azuis) em vez de competir em mercados existentes e saturados (oceanos vermelhos)."
+    },
+    {
+        "name": "Jobs to be Done",
+        "description": "Foco no \"trabalho\" que o cliente está tentando realizar, não nas características do produto ou serviço."
+    },
+    {
+        "name": "Analogias e Metáforas",
+        "description": "Uso de analogias de outros setores ou da natureza para inspirar soluções inovadoras."
+    },
+    {
+        "name": "Pensamento Lateral",
+        "description": "Abordagem de resolução de problemas que busca olhar para o problema de diferentes ângulos e perspectivas não convencionais."
+    },
+    {
+        "name": "Brainstorming Reverso",
+        "description": "Técnica que começa identificando todas as maneiras de fazer algo falhar, para depois reverter essas ideias em soluções."
+    },
+    {
+        "name": "Biomimética",
+        "description": "Inspiração em soluções encontradas na natureza para resolver problemas humanos."
+    }
+]

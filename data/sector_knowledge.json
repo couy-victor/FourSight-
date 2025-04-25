@@ -1,0 +1,44 @@
+{
+    "Financeiro": {
+        "keywords": ["banco", "fintech", "pagamento", "crédito", "investimento"],
+        "terms": ["open banking", "PIX", "KYC", "AML", "compliance"],
+        "regulations": ["Resolução BCB", "LGPD", "PCI DSS"],
+        "trends": ["banking as a service", "embedded finance", "open finance"],
+        "stakeholders": ["Bancos", "Fintechs", "Reguladores", "Clientes", "Investidores"]
+    },
+    "Seguros": {
+        "keywords": ["seguro", "risco", "sinistro", "apólice", "insurtech"],
+        "terms": ["subscrição", "resseguro", "sinistralidade", "prêmio"],
+        "regulations": ["SUSEP", "ANS", "LGPD"],
+        "trends": ["seguro paramétrico", "microseguros", "seguros on-demand"],
+        "stakeholders": ["Seguradoras", "Corretores", "Reguladores", "Segurados"]
+    },
+    "Pagamentos": {
+        "keywords": ["transação", "adquirência", "cartão", "wallet", "QR code"],
+        "terms": ["split payment", "chargeback", "tokenização", "NFC"],
+        "regulations": ["PCI DSS", "LGPD", "Regulações BCB"],
+        "trends": ["pagamentos invisíveis", "buy now pay later", "pagamentos instantâneos"],
+        "stakeholders": ["Adquirentes", "Bandeiras", "Emissores", "Comerciantes", "Consumidores"]
+    },
+    "Varejo": {
+        "keywords": ["loja", "e-commerce", "omnichannel", "marketplace", "consumidor"],
+        "terms": ["GMV", "NPS", "CAC", "LTV", "churn"],
+        "regulations": ["CDC", "LGPD", "Procon"],
+        "trends": ["live commerce", "social commerce", "retail media", "quick commerce"],
+        "stakeholders": ["Varejistas", "Fornecedores", "Consumidores", "Marketplaces"]
+    },
+    "Saúde": {
+        "keywords": ["hospital", "clínica", "paciente", "healthtech", "telemedicina"],
+        "terms": ["prontuário eletrônico", "TISS", "glosa", "sinistralidade"],
+        "regulations": ["ANS", "CFM", "LGPD", "ANVISA"],
+        "trends": ["telemedicina", "saúde digital", "wearables", "medicina preventiva"],
+        "stakeholders": ["Hospitais", "Operadoras", "Médicos", "Pacientes", "Reguladores"]
+    },
+    "Outro": {
+        "keywords": ["inovação", "tecnologia", "digital", "transformação", "experiência"],
+        "terms": ["digitalização", "automação", "UX", "analytics"],
+        "regulations": ["LGPD", "regulações setoriais"],
+        "trends": ["IA", "blockchain", "IoT", "computação em nuvem"],
+        "stakeholders": ["Empresas", "Clientes", "Funcionários", "Parceiros"]
+    }
+}

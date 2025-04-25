@@ -1,0 +1,35 @@
+# Arquivos de ambiente
+.env
+
+# Arquivos de cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Diretórios virtuais
+venv/
+env/
+ENV/
+
+# Arquivos de IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos temporários
+*.log
+*.tmp
+temp/
+tmp/
+
+# Arquivos de dados grandes que não devem ser versionados
+data/pdfs/*
+!data/pdfs/.gitkeep
