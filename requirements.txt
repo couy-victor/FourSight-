@@ -13,6 +13,7 @@ langchain-groq>=0.1.0
 langchain-core>=0.1.0
 langgraph>=0.0.20
 langchain-community>=0.0.13
+openai>=1.12.0
 
 # Processamento de PDF e RAG
 pypdf>=3.15.1
@@ -30,3 +31,4 @@ weasyprint>=60.1
 beautifulsoup4>=4.12.2
 tiktoken>=0.5.1
 chromadb>=0.4.18
+pysqlite3-binary>=0.5.0
