@@ -1,8 +1,10 @@
 streamlit
-langchain
-langchain-community
+matplotlib
+requests
+python-dotenv
 openai
 pandas
-faiss-cpu
-sentence-transformers
-pysqlite3-binary
+numpy
+langchain
+langchain-community
+pypdf
