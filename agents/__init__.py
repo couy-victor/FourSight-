@@ -3,6 +3,13 @@ from .researcher_agent import ResearcherAgent
 from .synthesizer_agent import SynthesizerAgent
 from .orchestrator import InnovationOrchestrator
 
+# Importar o orquestrador LangGraph
+try:
+    from langgraph_agents import LangGraphOrchestrator
+    has_langgraph = True
+except ImportError:
+    has_langgraph = False
+
 # Importações dos agentes originais
 try:
     from .researcher import ResearcherAgent as OriginalResearcherAgent
@@ -11,19 +18,40 @@ try:
     from .idealizer import IdealizerAgent
     from .evaluator import EvaluatorAgent
 
-    __all__ = [
-        'ResearcherAgent',
-        'SynthesizerAgent',
-        'InnovationOrchestrator',
-        'OriginalResearcherAgent',
-        'ContextualAgent',
-        'OriginalSynthesizerAgent',
-        'IdealizerAgent',
-        'EvaluatorAgent'
-    ]
+    if has_langgraph:
+        __all__ = [
+            'ResearcherAgent',
+            'SynthesizerAgent',
+            'InnovationOrchestrator',
+            'LangGraphOrchestrator',
+            'OriginalResearcherAgent',
+            'ContextualAgent',
+            'OriginalSynthesizerAgent',
+            'IdealizerAgent',
+            'EvaluatorAgent'
+        ]
+    else:
+        __all__ = [
+            'ResearcherAgent',
+            'SynthesizerAgent',
+            'InnovationOrchestrator',
+            'OriginalResearcherAgent',
+            'ContextualAgent',
+            'OriginalSynthesizerAgent',
+            'IdealizerAgent',
+            'EvaluatorAgent'
+        ]
 except ImportError:
-    __all__ = [
-        'ResearcherAgent',
-        'SynthesizerAgent',
-        'InnovationOrchestrator'
-    ]
+    if has_langgraph:
+        __all__ = [
+            'ResearcherAgent',
+            'SynthesizerAgent',
+            'InnovationOrchestrator',
+            'LangGraphOrchestrator'
+        ]
+    else:
+        __all__ = [
+            'ResearcherAgent',
+            'SynthesizerAgent',
+            'InnovationOrchestrator'
+        ]
