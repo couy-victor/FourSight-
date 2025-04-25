@@ -4,6 +4,7 @@ import base64
 import tempfile
 from datetime import datetime
 from typing import Dict, List, Any, Optional
+from matplotlib.figure import Figure
 
 # Verificar se as bibliotecas necessárias estão disponíveis
 PDF_AVAILABLE = False
