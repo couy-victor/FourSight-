@@ -1,16 +1,32 @@
-streamlit==1.32.0
-requests==2.31.0
-python-dotenv==1.0.0
-openai==1.12.0
-pandas==2.1.0
-numpy==1.26.0
-matplotlib==3.7.2
-beautifulsoup4==4.12.2
-langchain==0.1.0
-langchain-community==0.0.13
-pypdf==3.17.1
-faiss-cpu==1.7.4
-sentence-transformers==2.2.2
-pdfplumber==0.10.3
-chromadb==0.4.18
-tiktoken==0.5.1
+# Dependências principais
+streamlit>=1.32.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+pandas>=2.0.0
+numpy>=1.26.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# LangGraph e LangChain
+langchain>=0.1.0
+langchain-groq>=0.1.0
+langchain-core>=0.1.0
+langgraph>=0.0.20
+langchain-community>=0.0.13
+
+# Processamento de PDF e RAG
+pypdf>=3.15.1
+rank-bm25>=0.2.2
+sentence-transformers>=2.2.2
+faiss-cpu>=1.7.4
+pdfplumber>=0.10.3
+
+# Geração de relatórios
+fpdf>=1.7.2
+reportlab>=4.0.4
+weasyprint>=60.1
+
+# Outros
+beautifulsoup4>=4.12.2
+tiktoken>=0.5.1
+chromadb>=0.4.18

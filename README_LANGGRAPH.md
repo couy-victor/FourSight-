@@ -15,7 +15,7 @@ Este repositório contém a implementação do Sistema Multiagentes de Inovaçã
 ## Requisitos
 
 ```
-pip install -r requirements_langgraph.txt
+pip install -r requirements.txt
 ```
 
 Principais dependências:
@@ -24,7 +24,7 @@ Principais dependências:
 - seaborn
 - pandas
 - langgraph
-- langchain
+- langchain e langchain-groq
 - sentence-transformers
 - rank-bm25
 
@@ -38,7 +38,7 @@ Principais dependências:
 
 2. Instale as dependências:
    ```
-   pip install -r requirements_langgraph.txt
+   pip install -r requirements.txt
    ```
 
 ## Uso

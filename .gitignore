@@ -50,4 +50,5 @@ run_*.bat
 # Não ignorar:
 # - langgraph_agents/
 # - innovation_system_langgraph.py
-# - requirements_langgraph.txt
+# - requirements.txt
+# - README_LANGGRAPH.md
