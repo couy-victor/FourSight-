@@ -16,9 +16,11 @@ class InnovationState(BaseModel):
     max_papers_to_process: int = Field(default=2, description="Número máximo de PDFs a processar")
 
     # Resultados da pesquisa
-    research_results: List[Dict[str, Any]] = Field(default_factory=list, description="Resultados da pesquisa (web e arXiv)")
+    research_results: List[Dict[str, Any]] = Field(default_factory=list, description="Resultados combinados de todas as fontes")
     web_results: List[Dict[str, Any]] = Field(default_factory=list, description="Resultados da pesquisa na web")
     arxiv_results: List[Dict[str, Any]] = Field(default_factory=list, description="Resultados da pesquisa no arXiv")
+    reddit_results: List[Dict[str, Any]] = Field(default_factory=list, description="Resultados da pesquisa no Reddit")
+    producthunt_results: List[Dict[str, Any]] = Field(default_factory=list, description="Resultados da pesquisa no Product Hunt")
 
     # Artigos processados
     processed_papers: List[Dict[str, Any]] = Field(default_factory=list, description="Artigos processados com RAG")
@@ -58,6 +60,10 @@ class InnovationState(BaseModel):
             'topic': self.topic,
             'business_context': self.business_context,
             'research_results': self.research_results,
+            'web_results': self.web_results,
+            'arxiv_results': self.arxiv_results,
+            'reddit_results': self.reddit_results,
+            'producthunt_results': self.producthunt_results,
             'processed_papers': self.processed_papers,
             'research_report': self.research_report,
             'synthesis_results': synthesis_results,

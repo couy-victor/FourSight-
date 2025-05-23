@@ -8,126 +8,140 @@ class TrendAnalyzerNode:
     Nó responsável por analisar tendências emergentes a partir dos resultados de pesquisa.
     Identifica padrões, tecnologias e abordagens recentes no campo.
     """
-    
+
     async def run(self, state: InnovationState) -> InnovationState:
         """
         Analisa tendências emergentes a partir dos resultados de pesquisa.
-        
+
         Args:
             state: Estado atual do grafo
-            
+
         Returns:
             Estado atualizado com as tendências identificadas
         """
         # Atualizar o estágio atual
         state.current_stage = "Analisando tendências emergentes"
-        
+
         # Extrair tendências dos resultados de pesquisa e artigos processados
         trends = await self._extract_trends(
-            state.web_results, 
-            state.arxiv_results, 
-            state.processed_papers, 
-            state.topic, 
-            state.business_context
+            state.web_results,
+            state.arxiv_results,
+            state.processed_papers,
+            state.topic,
+            state.business_context,
+            state.reddit_results,
+            state.producthunt_results
         )
-        
+
         # Adicionar tendências ao estado
         state.trends = trends
-        
+
         return state
-    
+
     async def _extract_trends(
-        self, 
-        web_results: List[Dict[str, Any]], 
-        arxiv_results: List[Dict[str, Any]], 
-        processed_papers: List[Dict[str, Any]], 
-        topic: str, 
-        business_context: str
+        self,
+        web_results: List[Dict[str, Any]],
+        arxiv_results: List[Dict[str, Any]],
+        processed_papers: List[Dict[str, Any]],
+        topic: str,
+        business_context: str,
+        reddit_results: List[Dict[str, Any]] = None,
+        producthunt_results: List[Dict[str, Any]] = None
     ) -> List[Dict[str, Any]]:
         """
         Extrai tendências emergentes dos resultados de pesquisa.
-        
+
         Args:
             web_results: Resultados da pesquisa na web
             arxiv_results: Resultados da pesquisa no arXiv
             processed_papers: Artigos processados com RAG
             topic: Tópico de pesquisa
             business_context: Contexto de negócio
-            
+            reddit_results: Resultados da pesquisa no Reddit (opcional)
+            producthunt_results: Resultados da pesquisa no Product Hunt (opcional)
+
         Returns:
             Lista de tendências identificadas
         """
         # Ano atual para referência de recência
         current_year = datetime.now().year
-        
+
         # Preparar contexto para a análise de tendências
         web_context = self._prepare_web_context(web_results)
         arxiv_context = self._prepare_arxiv_context(arxiv_results)
         papers_context = self._prepare_papers_context(processed_papers)
-        
+        reddit_context = self._prepare_reddit_context(reddit_results) if reddit_results else ""
+        producthunt_context = self._prepare_producthunt_context(producthunt_results) if producthunt_results else ""
+
         # Criar o prompt para análise de tendências
         prompt = f"""
-        Analise os resultados de pesquisa recentes abaixo sobre o tópico "{topic}" e identifique as principais tendências emergentes, 
+        Analise os resultados de pesquisa recentes abaixo sobre o tópico "{topic}" e identifique as principais tendências emergentes,
         tecnologias inovadoras e abordagens de ponta que estão moldando este campo em {current_year}.
-        
+
         Contexto de Negócio:
         {business_context}
-        
+
         Resultados da Web (2024-2025):
         {web_context}
-        
+
         Artigos Científicos Recentes:
         {arxiv_context}
-        
+
         Resumos de Artigos Processados:
         {papers_context}
-        
+
+        Discussões Recentes no Reddit:
+        {reddit_context}
+
+        Produtos Inovadores do Product Hunt:
+        {producthunt_context}
+
         Para cada tendência identificada:
         1. Forneça um nome claro e descritivo para a tendência
         2. Descreva a tendência em detalhes (o que é, por que é importante, como está evoluindo)
         3. Indique o nível de maturidade (Emergente, Em crescimento, Estabelecida)
         4. Liste as fontes específicas que mencionam esta tendência (ex: "Mencionado no artigo X e nas fontes web Y e Z")
         5. Explique como esta tendência pode impactar o contexto de negócio fornecido
-        
+
         Identifique apenas tendências que são verdadeiramente recentes (2023-2025) e relevantes para o tópico e contexto.
         Priorize tendências que aparecem em múltiplas fontes ou que são destacadas como inovadoras nos artigos científicos.
-        
+
         Formato de saída:
-        
+
         ## [Nome da Tendência 1]
-        
+
         **Nível de Maturidade:** [Emergente/Em crescimento/Estabelecida]
-        
+
         **Descrição:**
         [Descrição detalhada da tendência]
-        
+
         **Fontes:**
         [Lista de fontes específicas que mencionam esta tendência]
-        
+
         **Impacto no Contexto de Negócio:**
         [Explicação de como esta tendência pode impactar o contexto de negócio]
-        
+
         ---
-        
+
         ## [Nome da Tendência 2]
-        
+
         ...e assim por diante.
         """
-        
+
         # Chamar a API para analisar tendências
         system_message = """Você é um analista especializado em identificar tendências emergentes e tecnologias inovadoras.
         Você tem habilidade para detectar padrões em pesquisas recentes e prever como eles podem evoluir.
         Você é especialmente bom em identificar tendências que são verdadeiramente novas e não apenas conceitos estabelecidos."""
-        
+
         response = call_groq_api(prompt, system_message, 1500)
-        
+
         # Processar a resposta para extrair as tendências
         trends = []
         current_trend = None
-        
+
         for line in response.split('\n'):
             line = line.strip()
-            
+
             # Nova tendência começa com ##
             if line.startswith('## '):
                 if current_trend:
@@ -173,45 +187,45 @@ class TrendAnalyzerNode:
                             current_trend['impact'] += '\n' + line
                         else:
                             current_trend['impact'] = line
-        
+
         # Adicionar a última tendência se existir
         if current_trend:
             trends.append(current_trend)
-        
+
         return trends
-    
+
     def _prepare_web_context(self, web_results: List[Dict[str, Any]]) -> str:
         """Prepara o contexto a partir dos resultados da web."""
         if not web_results:
             return "Nenhum resultado da web disponível."
-        
+
         context = ""
         for i, result in enumerate(web_results[:5]):  # Limitar a 5 resultados para manter o prompt conciso
             context += f"\nFonte Web {i+1}: {result.get('title', 'Sem título')}\n"
             context += f"URL: {result.get('url', '#')}\n"
             context += f"Trecho: {result.get('snippet', 'Sem trecho disponível')}\n"
-        
+
         return context
-    
+
     def _prepare_arxiv_context(self, arxiv_results: List[Dict[str, Any]]) -> str:
         """Prepara o contexto a partir dos resultados do arXiv."""
         if not arxiv_results:
             return "Nenhum artigo científico disponível."
-        
+
         context = ""
         for i, paper in enumerate(arxiv_results[:5]):  # Limitar a 5 artigos
             context += f"\nArtigo {i+1}: {paper.get('title', 'Sem título')}\n"
             context += f"Autores: {', '.join(paper.get('authors', ['Desconhecido'])[:3])}\n"
             context += f"Data: {paper.get('published_date', 'Desconhecida')}\n"
             context += f"Resumo: {paper.get('summary', 'Sem resumo')[:300]}...\n"  # Truncar resumos longos
-        
+
         return context
-    
+
     def _prepare_papers_context(self, processed_papers: List[Dict[str, Any]]) -> str:
         """Prepara o contexto a partir dos artigos processados."""
         if not processed_papers:
             return "Nenhum artigo processado disponível."
-        
+
         context = ""
         for i, paper in enumerate(processed_papers):
             context += f"\nArtigo Processado {i+1}: {paper.get('title', 'Sem título')}\n"
@@ -223,5 +237,46 @@ class TrendAnalyzerNode:
                 context += f"Resumo IA: {summary}\n"
             else:
                 context += "Sem resumo disponível.\n"
-        
+
+        return context
+
+    def _prepare_reddit_context(self, reddit_results: List[Dict[str, Any]]) -> str:
+        """Prepara o contexto a partir dos resultados do Reddit."""
+        if not reddit_results:
+            return "Nenhuma discussão do Reddit disponível."
+
+        context = ""
+        for i, post in enumerate(reddit_results[:5]):  # Limitar a 5 posts para manter o prompt conciso
+            context += f"\nPost Reddit {i+1}: {post.get('title', 'Sem título')}\n"
+            context += f"Subreddit: r/{post.get('subreddit', 'desconhecido')}\n"
+            context += f"Data: {post.get('created_date', 'Desconhecida')}\n"
+            context += f"Votos: {post.get('score', 0)}, Comentários: {post.get('num_comments', 0)}\n"
+            context += f"Trecho: {post.get('snippet', 'Sem conteúdo disponível')[:200]}...\n"
+
+        return context
+
+    def _prepare_producthunt_context(self, producthunt_results: List[Dict[str, Any]]) -> str:
+        """Prepara o contexto a partir dos resultados do Product Hunt."""
+        if not producthunt_results:
+            return "Nenhum produto do Product Hunt disponível."
+
+        context = ""
+        for i, product in enumerate(producthunt_results[:5]):  # Limitar a 5 produtos para manter o prompt conciso
+            context += f"\nProduto {i+1}: {product.get('title', 'Sem nome')}\n"
+            snippet = product.get('snippet', '')
+            tagline = snippet.split('\n')[0] if '\n' in snippet else snippet
+            context += f"Tagline: {tagline}\n"
+            context += f"Data: {product.get('created_date', 'Desconhecida')}\n"
+            context += f"Votos: {product.get('votes', 0)}\n"
+
+            # Adicionar tópicos se disponíveis
+            if 'topics' in product and product['topics']:
+                context += f"Tópicos: {', '.join(product['topics'][:5])}\n"
+
+            # Adicionar descrição truncada
+            snippet = product.get('snippet', '')
+            if '\n\n' in snippet:
+                description = snippet.split('\n\n', 1)[1]
+                context += f"Descrição: {description[:150]}...\n"
+
         return context

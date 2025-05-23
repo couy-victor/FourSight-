@@ -197,6 +197,10 @@ def main():
                         'topic': topic,
                         'business_context': business_context,
                         'research_results': research_results,
+                        'web_results': orchestrator.state.web_results,
+                        'arxiv_results': orchestrator.state.arxiv_results,
+                        'reddit_results': orchestrator.state.reddit_results,
+                        'producthunt_results': orchestrator.state.producthunt_results,
                         'processed_papers': processed_papers,
                         'research_report': research_report,
                         'synthesis_results': synthesis_results,
@@ -714,15 +718,21 @@ def main():
             st.markdown("## Resultados da Pesquisa")
 
             # Separar resultados por fonte
-            web_results = [r for r in results['research_results'] if r.get('source') == 'Web']
-            arxiv_results = [r for r in results['research_results'] if r.get('source') == 'arXiv']
+            web_results = results.get('web_results', [])
+            arxiv_results = results.get('arxiv_results', [])
+            reddit_results = results.get('reddit_results', [])
+            producthunt_results = results.get('producthunt_results', [])
 
             # Mostrar estatísticas
-            col1, col2 = st.columns(2)
+            col1, col2, col3, col4 = st.columns(4)
             with col1:
                 st.metric("Resultados da Web", len(web_results))
             with col2:
                 st.metric("Artigos Científicos", len(arxiv_results))
+            with col3:
+                st.metric("Posts do Reddit", len(reddit_results))
+            with col4:
+                st.metric("Produtos do Product Hunt", len(producthunt_results))
 
             # Mostrar resultados da web
             if web_results:
@@ -746,6 +756,36 @@ def main():
                             st.markdown(f"**PDF:** [{paper.get('pdf_url', '#')}]({paper.get('pdf_url', '#')})")
                         st.markdown("**Resumo:**")
                         st.markdown(paper.get('summary', 'Sem resumo disponível'))
+
+            # Mostrar resultados do Reddit
+            if reddit_results:
+                st.subheader("Discussões do Reddit")
+                for i, post in enumerate(reddit_results):
+                    with st.expander(f"{i+1}. {post.get('title', 'Sem título')}"):
+                        st.markdown(f"**Subreddit:** r/{post.get('subreddit', 'desconhecido')}")
+                        st.markdown(f"**Data:** {post.get('created_date', 'Desconhecida')}")
+                        st.markdown(f"**URL:** [{post.get('url', '#')}]({post.get('url', '#')})")
+                        st.markdown(f"**Votos:** {post.get('score', 0)} | **Comentários:** {post.get('num_comments', 0)}")
+                        st.markdown("**Conteúdo:**")
+                        st.markdown(post.get('snippet', 'Sem conteúdo disponível'))
+
+            # Mostrar resultados do Product Hunt
+            if producthunt_results:
+                st.subheader("Produtos do Product Hunt")
+                for i, product in enumerate(producthunt_results):
+                    with st.expander(f"{i+1}. {product.get('title', 'Sem nome')}"):
+                        tagline = product.get('snippet', '').split('\n')[0] if '\n' in product.get('snippet', '') else product.get('snippet', '')
+                        st.markdown(f"**Tagline:** {tagline}")
+                        st.markdown(f"**Data:** {product.get('created_date', 'Desconhecida')}")
+                        st.markdown(f"**URL:** [{product.get('url', '#')}]({product.get('url', '#')})")
+                        if product.get('website'):
+                            st.markdown(f"**Website:** [{product.get('website', '#')}]({product.get('website', '#')})")
+                        st.markdown(f"**Votos:** {product.get('votes', 0)}")
+                        if 'topics' in product and product['topics']:
+                            st.markdown(f"**Tópicos:** {', '.join(product['topics'])}")
+                        st.markdown("**Descrição:**")
+                        description = product.get('snippet', '').split('\n\n', 1)[1] if '\n\n' in product.get('snippet', '') else product.get('snippet', '')
+                        st.markdown(description)
 
         # Tab 5: Artigos Processados
         with tabs[4]:
