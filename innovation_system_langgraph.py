@@ -37,7 +37,7 @@ st.set_page_config(
 
 def main():
     # Configuração da página
-    st.title("💡 FourSight - Sistema Multiagentes de Inovação com LangGraph")
+    st.title("💡 FourSight - Sistema Multiagentes de Inovação")
 
     st.markdown("""
     <div style="background-color: #f0f7ff; padding: 15px; border-radius: 10px; border-left: 5px solid #2E86C1;">
@@ -105,7 +105,7 @@ def main():
             )
 
         # Botão para iniciar o processo
-        start_button = st.button("Iniciar Processo de Inovação (LangGraph)", type="primary")
+        start_button = st.button("Iniciar Processo de Inovação", type="primary")
 
         # Informações adicionais
         st.markdown("---")
